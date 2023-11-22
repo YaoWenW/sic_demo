@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QFileDialog
 from scipy import stats
 import sys
 import qdarkstyle
+import login
 # 设置显示中文字体
 
 matplotlib.rcParams['font.family'] = 'SimHei'
@@ -920,55 +921,56 @@ class Ui_MainWindow(object):
 # 参数预测
 # 地层识别
 
-class logindialog(QDialog):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.setWindowTitle('登录界面')
-        self.resize(230, 180)
-        self.setFixedSize(self.width(), self.height())
-        self.setWindowFlags(Qt.WindowCloseButtonHint)
-
-        ###### 设置界面控件
-        self.frame = QFrame(self)
-        self.verticalLayout = QVBoxLayout(self.frame)
-
-        self.lineEdit_account = QLineEdit()
-        self.lineEdit_account.setPlaceholderText("请输入账号")
-        self.verticalLayout.addWidget(self.lineEdit_account)
-
-        self.lineEdit_password = QLineEdit()
-        self.lineEdit_password.setPlaceholderText("请输入密码")
-        self.verticalLayout.addWidget(self.lineEdit_password)
-
-        self.pushButton_enter = QPushButton()
-        self.pushButton_enter.setText("确定")
-        self.verticalLayout.addWidget(self.pushButton_enter)
-
-        self.pushButton_quit = QPushButton()
-        self.pushButton_quit.setText("取消")
-        self.verticalLayout.addWidget(self.pushButton_quit)
-
-        ###### 绑定按钮事件
-        self.pushButton_enter.clicked.connect(self.on_pushButton_enter_clicked)
-        self.pushButton_quit.clicked.connect(QCoreApplication.instance().quit)
-
-    def on_pushButton_enter_clicked(self):
-        # 账号判断
-        if self.lineEdit_account.text() != "wyw":
-            print("用户名不存在")
-        # 密码判断
-        elif self.lineEdit_password.text() != "123":
-            print("密码错误")
-
-        # 通过验证，关闭对话框并返回1
-        else:
-            self.accept()
+# class logindialog(QDialog):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.setWindowTitle('登录界面')
+#         self.resize(230, 180)
+#         self.setFixedSize(self.width(), self.height())
+#         self.setWindowFlags(Qt.WindowCloseButtonHint)
+#
+#         ###### 设置界面控件
+#         self.frame = QFrame(self)
+#         self.verticalLayout = QVBoxLayout(self.frame)
+#
+#         self.lineEdit_account = QLineEdit()
+#         self.lineEdit_account.setPlaceholderText("请输入账号")
+#         self.verticalLayout.addWidget(self.lineEdit_account)
+#
+#         self.lineEdit_password = QLineEdit()
+#         self.lineEdit_password.setPlaceholderText("请输入密码")
+#         self.verticalLayout.addWidget(self.lineEdit_password)
+#
+#         self.pushButton_enter = QPushButton()
+#         self.pushButton_enter.setText("确定")
+#         self.verticalLayout.addWidget(self.pushButton_enter)
+#
+#         self.pushButton_quit = QPushButton()
+#         self.pushButton_quit.setText("取消")
+#         self.verticalLayout.addWidget(self.pushButton_quit)
+#
+#         ###### 绑定按钮事件
+#         self.pushButton_enter.clicked.connect(self.on_pushButton_enter_clicked)
+#         self.pushButton_quit.clicked.connect(QCoreApplication.instance().quit)
+#
+#     def on_pushButton_enter_clicked(self):
+#         # 账号判断
+#         if self.lineEdit_account.text() != "wyw":
+#             print("用户名不存在")
+#         # 密码判断
+#         elif self.lineEdit_password.text() != "123":
+#             print("密码错误")
+#
+#         # 通过验证，关闭对话框并返回1
+#         else:
+#             self.accept()
 
 
 if __name__ == '__main__':  # 直接测试 运行的时候会执行，导入的时候不会执行
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-    dialog = logindialog()
+    # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+    dialog = login.LoginWindow()
     MainWindow = QtWidgets.QMainWindow()
     if dialog.exec_() == QDialog.Accepted:
         # if True:
