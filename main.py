@@ -4,7 +4,7 @@ import qdarkstyle
 from qdarkstyle.light.palette import LightPalette
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QMainWindow, QDialog
-from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtGui import QDesktopServices, QIcon
 from PyQt5.QtCore import QUrl
 from qt_material import apply_stylesheet
 from QCandyUi.CandyWindow import colorful
@@ -45,15 +45,17 @@ if __name__ == '__main__':
 
     # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette())) # 浅色
+    app.setWindowIcon(QIcon('logo.ico'))
     # apply_stylesheet(app, theme='light_blue.xml')
     dialog = login.LoginWindow()
+    # dialog.setWindowIcon(QIcon('logo.ico'))
     MainWindow = QtWidgets.QWidget()
 
 
     def open_url():
         # 在这里添加你要打开的 URL
         print('1')
-        url = QUrl('https://www.custai.top')
+        url = QUrl('https://www.custai.top/login/')
         QDesktopServices.openUrl(url)
         return
 
