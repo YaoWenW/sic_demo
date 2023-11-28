@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButto
 from PyQt5.QtGui import QFont
 from PyQt5 import QtCore
 import qdarkstyle
+#
 
 class LoginWindow(QDialog):
     def __init__(self):
@@ -14,7 +15,7 @@ class LoginWindow(QDialog):
         self.setGeometry(300, 200, 400, 300)
         self.setFixedSize(400, 300)  # 固定窗口大小
 
-        self.setStyleSheet("background-color: #f0f0f0;")
+        # self.setStyleSheet("background-color: #f0f0f0;")
 
         self.title_label = QLabel('欢迎登录', self)
         self.title_label.setFont(QFont("Arial", 18))
@@ -23,13 +24,13 @@ class LoginWindow(QDialog):
         self.username_input = QLineEdit(self)
         self.username_input.setGeometry(50, 100, 300, 30)
         self.username_input.setPlaceholderText('用户名')
-        self.username_input.setStyleSheet("background-color: #ffffff; border: 1px solid #ccc; border-radius: 5px;")
+        # self.username_input.setStyleSheet("background-color: #ffffff; border: 1px solid #ccc; border-radius: 5px;")
 
         self.password_input = QLineEdit(self)
         self.password_input.setGeometry(50, 150, 300, 30)
         self.password_input.setPlaceholderText('密码')
         self.password_input.setEchoMode(QLineEdit.Password)
-        self.password_input.setStyleSheet("background-color: #ffffff; border: 1px solid #ccc; border-radius: 5px;")
+        # self.password_input.setStyleSheet("background-color: #ffffff; border: 1px solid #ccc; border-radius: 5px;")
 
         self.login_button = QPushButton('登录', self)
         self.login_button.setGeometry(50, 210, 300, 40)
