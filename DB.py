@@ -492,45 +492,61 @@ class Ui_MainWindow(object):
             if self.comboBox_1.currentText() == "标准格式数据":
                 data_std.to_excel(save_path2, index=False)
             if self.comboBox_1.currentText() == "每环平均数据":
-                DATA = data
-                cols = ['环号(r)', '刀盘转矩(kN*m)', '刀盘转速(r/min)', '顶部土压(bar)', '总推进力(kN)', '推进速度(mm/min)',
-                        '设备侧滚(mm)', '设备倾角(°)', '贯入度(mm)', '土压2#(bar)', '土压3#(bar)', '土压4#(bar)', '土压5#(bar)',
-                        '土压6#(bar)',
-                        '土压平均值(bar)', '1#铰接油缸行程(mm)', '3#铰接油缸行程(mm)', '5#铰接油缸行程(mm)', '7#铰接油缸行程(mm)',
-                        '右A组油缸推进压力(bar)', '下B组油缸推进压力(bar)', '左C组油缸推进压力(bar)', '上D组油缸推进压力(bar)',
-                        '螺旋机上卸料门开度(mm)', '螺旋机下卸料门开度(mm)', '螺旋机压力测量值(bar)', '螺旋机土压测量值后(bar)',
-                        '螺旋机转矩(kN*m)', '螺旋机速度(r/min)', '1#膨润土流量(L)', '2#膨润土流量(L)', '泡沫原液流量(L)',
-                        'A组油缸行程(mm)', 'B组油缸行程(mm)', 'C组油缸行程(mm)', 'D组油缸行程(mm)']  # 标准列名格式
+                try:
+                    # DATA = data
 
-                sum_cols = ['1#膨润土流量(L)', '2#膨润土流量(L)', '泡沫原液流量(L)']
-                max_cols = ['A组油缸行程(mm)', 'B组油缸行程(mm)', 'C组油缸行程(mm)', 'D组油缸行程(mm)']
-                if set(sum_cols).issubset(data.columns) and set(max_cols).issubset(data.columns):
-                    # 每环取平均--数据透视表
-                    data_ring = DATA.pivot_table(index='环号(r)',  # 透视的行，分组依据
-                                                 values=DATA[DATA.columns],  # 值
-                                                 aggfunc='mean')  # 聚合函数
-                    # 每环取求和--数据透视表
-                    datasum = DATA.pivot_table(index='环号(r)',  # 透视的行，分组依据
-                                               values=DATA[sum_cols],  # 值
-                                               aggfunc='sum')  # 聚合函数
-                    # 每环取求和--数据透视表
-                    datamax = DATA.pivot_table(index='环号(r)',  # 透视的行，分组依据
-                                               values=DATA[max_cols],  # 值
-                                               aggfunc='max')  # 聚合函数
-                    data_ring[sum_cols] = datasum[sum_cols]
-                    data_ring[max_cols] = datamax[max_cols]
+                    data_ring = data.pivot_table(index='环号(r)',  # 透视的行，分组依据
+                                                 values=data.columns,  # 值
+                                                 aggfunc='mean').reset_index()  # 聚合函数
 
-                    DATA_rings = pd.DataFrame(columns=cols)
-                    col = data_ring.reset_index().columns
-                    DATA_rings[col] = data_ring.reset_index()
-                else:
-                    DATA_rings = pivot(DATA).reset_index()
-                DATA_rings.to_excel(save_path3, index=False)
+                    data_ring.to_excel(save_path3, index=False)
+                    # cols = ['环号(r)', '刀盘转矩(kN*m)', '刀盘转速(r/min)', '顶部土压(bar)', '总推进力(kN)', '推进速度(mm/min)',
+                    #         '设备侧滚(mm)', '设备倾角(°)', '贯入度(mm)', '土压2#(bar)', '土压3#(bar)', '土压4#(bar)', '土压5#(bar)',
+                    #         '土压6#(bar)',
+                    #         '土压平均值(bar)', '1#铰接油缸行程(mm)', '3#铰接油缸行程(mm)', '5#铰接油缸行程(mm)', '7#铰接油缸行程(mm)',
+                    #         '右A组油缸推进压力(bar)', '下B组油缸推进压力(bar)', '左C组油缸推进压力(bar)', '上D组油缸推进压力(bar)',
+                    #         '螺旋机上卸料门开度(mm)', '螺旋机下卸料门开度(mm)', '螺旋机压力测量值(bar)', '螺旋机土压测量值后(bar)',
+                    #         '螺旋机转矩(kN*m)', '螺旋机速度(r/min)', '1#膨润土流量(L)', '2#膨润土流量(L)', '泡沫原液流量(L)',
+                    #         'A组油缸行程(mm)', 'B组油缸行程(mm)', 'C组油缸行程(mm)', 'D组油缸行程(mm)']  # 标准列名格式
+                    # sum_cols = ['1#膨润土流量(L)', '2#膨润土流量(L)', '泡沫原液流量(L)']
+                    # # sum_cols = []
+                    # max_cols = ['A组油缸行程(mm)', 'B组油缸行程(mm)', 'C组油缸行程(mm)', 'D组油缸行程(mm)']
+                    # # max_cols = []
+                    #
+                    #
+                    # if set(sum_cols).issubset(data.columns) and set(max_cols).issubset(data.columns):
+                    #     # 每环取平均--数据透视表
+                    #     data_ring = data.pivot_table(index='环号(r)',  # 透视的行，分组依据
+                    #                                  values=data.columns,  # 值
+                    #                                  aggfunc='mean')  # 聚合函数
+                    #     # 每环取求和--数据透视表
+                    #     datasum = pd.DataFrame(columns=cols)
+                    #     datamax = pd.DataFrame(columns=cols)
+                    #     datasum = data.pivot_table(index='环号(r)',  # 透视的行，分组依据
+                    #                                values=sum_cols,  # 值
+                    #                                aggfunc='sum')  # 聚合函数
+                    #     # 每环取求和--数据透视表
+                    #     datamax = data.pivot_table(index='环号(r)',  # 透视的行，分组依据
+                    #                                values=max_cols,  # 值
+                    #                                aggfunc='max')  # 聚合函数
+                    #
+                    #     data_ring[sum_cols] = datasum[sum_cols]
+                    #     data_ring[max_cols] = datamax[max_cols]
+
+                    #     DATA_rings = pd.DataFrame(columns=cols)
+                    #     col = data_ring.reset_index().columns
+                    #     DATA_rings[col] = data_ring.reset_index()
+                    # else:
+                    #     DATA_rings = pivot(data).reset_index()
+                except:
+                    print('程序异常')
+                    return
+
             if self.comboBox_1.currentText() == "降噪后数据":
                 data_denoise.to_excel(save_path4, index=False)
             self.label_x3.show()
         else:
-            pass
+            return
 
     # 特征选择
     def creat_table_show0(self, MainWindow):
@@ -568,7 +584,7 @@ class Ui_MainWindow(object):
                 self.label.show()
 
         else:
-            pass
+            return
 
     # 特征选择(建议特征)
     def creat_table_show(self, MainWindow):
