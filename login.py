@@ -14,7 +14,6 @@ class LoginWindow(QDialog):
         self.setWindowTitle('登录 - 软件标题')  # 在这里修改软件标题
         self.setGeometry(300, 200, 400, 300)
         self.setFixedSize(400, 300)  # 固定窗口大小
-
         # self.setStyleSheet("background-color: #f0f0f0;")
 
         self.title_label = QLabel('欢迎登录', self)

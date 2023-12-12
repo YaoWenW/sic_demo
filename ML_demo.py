@@ -4,6 +4,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib
 import matplotlib.pyplot as plt
+from PyQt5.QtWidgets import QTableWidgetItem
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from tensorflow.keras.models import Sequential
@@ -13,16 +14,16 @@ import pymc3 as pm
 import theano
 import theano.tensor as T
 import arviz as az
-
-
+from tensorflow import keras
 import warnings
+import ml
+from PyQt5.Qt import *
+from PyQt5 import QtCore, QtWidgets
+
 warnings.filterwarnings('ignore')
 palette = 'muted'
 matplotlib.rcParams['font.family']='SimHei'
 plt.rcParams['axes.unicode_minus'] = False
-
-
-data_ring = pd.read_excel('D:/Desktop/Database/5标注后参数/每环标注-钻孔.xlsx')
 
 def process(data):
     DATA = data.copy(deep=True)
@@ -52,53 +53,81 @@ def process(data):
     DATA['软硬程度'] = pd.Categorical(DATA['软硬程度']).codes
     return DATA
 
-data = process(data_ring)
-print(data)
-
-#  划分测试集
-operation_cols = ['刀盘转速(r/min)','推进速度(mm/min)','总推进力(KN)','螺旋机速度(r/min)','1#膨润土流量(L)','泡沫原液流量(L)']
-response_cols = ['刀盘转矩(kN*m)','顶部土压(bar)','土压平均值(bar)','螺旋机转矩(kN*m)']
-other_cols = ['标注','埋深(m)']
-train_cols = [col for col in data.columns if col not in ['标注','区间','软硬程度']]
-# goal_col = '软硬程度'
-goal_col = '标注'
-
 # 归一化参数
 def minmax_norm(df_input):
     return (df_input- df_input.min()) / ( df_input.max() - df_input.min())
 
 #  地层识别
 #  逻辑回归
-def LR_model(x_train,y_train,x_test,y_test):
-    softmax_reg = LogisticRegression(multi_class="multinomial", solver="lbfgs", C=10)
-    model = softmax_reg.fit(x_train, y_train.values)
+def draw_classify(model, x_train, y_train, x_test, y_test):
     train_predict = model.predict(x_train)
-    print("train_accuracy =", np.sum(y_train.values == train_predict) / len(pd.Categorical(y_train).codes))
-
     test_predict = model.predict(x_test)
-    print("test_accuracy =", np.sum(y_test == test_predict) / len(y_test))
-    return
+
+    fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(8, 6))  # 创建两个子图，纵向排列，指定画布大小
+
+    # 绘制第一个子图 train
+    n_train = min(100, len(x_train))
+    indices_train = np.arange(n_train)
+    train_diff_indices = np.where(train_predict[:n_train] != y_train[:n_train])[0]
+    axes[0].scatter(indices_train, train_predict[:n_train], s=100, alpha=0.5, label='predict_train', marker='o')
+    axes[0].scatter(indices_train, y_train[:n_train], s=50, label='y_train', marker='o')
+    if len(train_diff_indices) > 0:
+        axes[0].scatter(train_diff_indices, train_predict[train_diff_indices], s=150, marker='x', color='red',
+                        label='Incorrect Prediction')
+    axes[0].legend()
+    axes[0].set_title('Train')
+
+    # 绘制第二个子图 test
+    n_test = min(100, len(x_test))
+    indices_test = np.arange(n_test)
+    test_diff_indices = np.where(test_predict[:n_test] != y_test[:n_test])[0]
+    axes[1].scatter(indices_test, test_predict[:n_test], s=100, alpha=0.5, label='predict_test', marker='o')
+    axes[1].scatter(indices_test, y_test[:n_test], s=50, label='y_test', marker='o')
+    if len(test_diff_indices) > 0:
+        axes[1].scatter(test_diff_indices, test_predict[test_diff_indices], s=150, marker='x', color='red',
+                        label='Incorrect Prediction')
+    axes[1].legend()
+    axes[1].set_title('Test')
+
+    plt.tight_layout()
+    plt.show()
+
+def SR_model(x_train,y_train,x_test,y_test, c = 10, epochs = 100):
+    try:
+        softmax_reg = LogisticRegression(multi_class="multinomial",
+                                         solver="lbfgs",  # 求解器
+                                         C = c,  # 正则化强度，C 值越小，正则化越强，可以减少过拟合。
+                                         max_iter=epochs,  # 最大迭代次数
+                                         )
+        model = softmax_reg.fit(x_train, y_train.values)
+        train_predict = model.predict(x_train)
+        print("train_accuracy =", np.sum(y_train.values == train_predict) / len(pd.Categorical(y_train).codes))
+        test_predict = model.predict(x_test)
+        print("test_accuracy =", np.sum(y_test == test_predict) / len(y_test))
+        return
+    except:
+        print('SR计算有误')
+
 
 #  ANN
-def ANN_model(x_train,y_train,x_test,y_test):
+def ANN_model(x_train,y_train,x_test,y_test,layers = 1, nums = 32, epochs = 2000, drop = 0.1, lr = 0.01):
     # 数据输入 → 全连层*3 → Dropout层（防止过拟合） → 分类输出
     model = Sequential()
-    model.add(Dense(32, input_dim=10, activation='relu'))
-    # model.add(Dense(512, activation='relu'))
-    # model.add(Dense(256, activation='relu'))
-    model.add(Dropout(0.1))
-    model.add(Dense(6, activation='softmax'))
+    for _ in range(layers):
+        model.add(Dense(nums, input_dim=len(x_train.iloc[0]), activation='relu'))
+    model.add(Dropout(drop))
+    model.add(Dense(len(set(y_train)), activation='softmax'))
 
     model.summary()  # 使用属性，获取神经层很容易，可以通过索引或名称获取对应的层
     # 创建好模型之后，必须调用compile()方法，设置损失函数和优化器。另外，还可以指定训练和评估过程中要计算的额外指标的列表
 
     model.compile(loss="sparse_categorical_crossentropy",  # 等同于loss=keras.losses.sparse_categorical_crossentropy
-                  optimizer="sgd",  # 等同于optimizer=keras.optimizers.SGD() -- "sgd"表示使用随机梯度下降训练模型
+                  # optimizer="sgd",  # 等同于optimizer=keras.optimizers.SGD() -- "sgd"表示使用随机梯度下降训练模型
+                  optimizer=keras.optimizers.SGD(lr=lr),
                   # 调整学习率很重要，必须要手动设置好，optimizer=keras.optimizers.SGD(lr=???)。optimizer="sgd"不同，它的学习率默认为lr=0.01
                   metrics=["accuracy"])  # 等同于metrics=[keras.metrics.sparse_categorical_accuracy]
     # 因为是个分类器，最好在训练和评估时测量"accuracy"
-    history = model.fit(x_train, y_train.values, epochs=2000,
-                        validation_split=0.02)
+    history = model.fit(x_train, y_train.values, epochs=epochs, validation_split=0.02)
 
     pd.DataFrame(history.history).plot(figsize=(8, 5))
     plt.grid(True)
@@ -339,17 +368,45 @@ def regress(x_train, y_train):
     LGBM_model = LGBMRegressor(objective='regression', num_leaves=55, max_depth=15)
     LGBM_model.fit(x_train, y_train)
 
+
 if __name__ == '__main__':
+    data_ring = pd.read_excel('D:/Desktop/Database/5标注后参数/每环标注-钻孔.xlsx')
+    data = process(data_ring)
+    print(data)
+    #  划分测试集
+    operation_cols = ['刀盘转速(r/min)', '推进速度(mm/min)', '总推进力(KN)', '螺旋机速度(r/min)', '1#膨润土流量(L)', '泡沫原液流量(L)']
+    response_cols = ['刀盘转矩(kN*m)', '顶部土压(bar)', '土压平均值(bar)', '螺旋机转矩(kN*m)']
+    other_cols = ['标注', '埋深(m)']
+    goal_col = '标注'
+    useless_cols = ['区间', '软硬程度']
+
+    useless_cols.append(goal_col)
+    train_cols = [col for col in data.columns if col not in useless_cols]
     ## 测试集大小为20%， 80%/20%分
     X = data[train_cols]
     y = data[goal_col]
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2000)
     x_train, x_test = minmax_norm(x_train), minmax_norm(x_test)
+
+
+
     # LR_model(x_train,y_train,x_test,y_test)
     # ANN_model(x_train,y_train,x_test,y_test)
     # LGBM_C_model()
     # BSR()
     # BNN()
+
+    # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+    # app = QtWidgets.QApplication(sys.argv)
+    # # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+    # dialog = login.LoginWindow()
+    # MainWindow = QtWidgets.QMainWindow()
+    # if dialog.exec_() == QDialog.Accepted:
+    #     # if True:
+    #     ui = Ui_MainWindow()
+    #     ui.setupUi(MainWindow)
+    #     MainWindow.show()
+    #     sys.exit(app.exec_())
 #  参数预测
 #
 #  参数优化
