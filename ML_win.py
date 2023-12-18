@@ -18,6 +18,18 @@ class Ui_Dialog(object):
         Dialog.setStyleSheet("")
         self.gridLayout = QtWidgets.QGridLayout(Dialog)
         self.gridLayout.setObjectName("gridLayout")
+        self.label = QtWidgets.QLabel(Dialog)
+        font = QtGui.QFont()
+        font.setFamily("黑体")
+        font.setPointSize(28)
+        self.label.setFont(font)
+        self.label.setLineWidth(1)
+        self.label.setScaledContents(False)
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.label.setWordWrap(False)
+        self.label.setOpenExternalLinks(False)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
         self.textBrowser_2 = QtWidgets.QTextBrowser(Dialog)
         self.textBrowser_2.setObjectName("textBrowser_2")
         self.gridLayout.addWidget(self.textBrowser_2, 4, 0, 1, 1)
@@ -29,12 +41,6 @@ class Ui_Dialog(object):
         self.pushButton_db.setStyleSheet("border-color: rgb(255, 255, 255);")
         self.pushButton_db.setObjectName("pushButton_db")
         self.gridLayout.addWidget(self.pushButton_db, 1, 0, 1, 1)
-        self.textBrowser_3 = QtWidgets.QTextBrowser(Dialog)
-        self.textBrowser_3.setObjectName("textBrowser_3")
-        self.gridLayout.addWidget(self.textBrowser_3, 6, 0, 1, 1)
-        self.textBrowser = QtWidgets.QTextBrowser(Dialog)
-        self.textBrowser.setObjectName("textBrowser")
-        self.gridLayout.addWidget(self.textBrowser, 2, 0, 1, 1)
         self.pushButton_db2 = QtWidgets.QPushButton(Dialog)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -42,13 +48,9 @@ class Ui_Dialog(object):
         self.pushButton_db2.setFont(font)
         self.pushButton_db2.setObjectName("pushButton_db2")
         self.gridLayout.addWidget(self.pushButton_db2, 3, 0, 1, 1)
-        self.label = QtWidgets.QLabel(Dialog)
-        font = QtGui.QFont()
-        font.setFamily("黑体")
-        font.setPointSize(28)
-        self.label.setFont(font)
-        self.label.setObjectName("label")
-        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
+        self.textBrowser_3 = QtWidgets.QTextBrowser(Dialog)
+        self.textBrowser_3.setObjectName("textBrowser_3")
+        self.gridLayout.addWidget(self.textBrowser_3, 6, 0, 1, 1)
         self.pushButton_ml = QtWidgets.QPushButton(Dialog)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -56,31 +58,63 @@ class Ui_Dialog(object):
         self.pushButton_ml.setFont(font)
         self.pushButton_ml.setObjectName("pushButton_ml")
         self.gridLayout.addWidget(self.pushButton_ml, 5, 0, 1, 1)
+        self.textBrowser = QtWidgets.QTextBrowser(Dialog)
+        self.textBrowser.setObjectName("textBrowser")
+        self.gridLayout.addWidget(self.textBrowser, 2, 0, 1, 1)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Dialog", "EPB智能掘进系统"))
+        self.label.setText(_translate("Dialog", "EPB智能掘进系统"))
         self.textBrowser_2.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">输入介绍</p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
-        self.pushButton_db.setText(_translate("Dialog", "数据处理系统"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; text-decoration: underline;\">数据库平台主要为盾构标准化数据库提供</span><span style=\" font-size:12pt; font-weight:600; text-decoration: underline;\">云端数据库服务</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; font-weight:600; text-decoration: underline;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">具体功能包括：</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; font-style:italic;\">1.原始数据仓库</span><span style=\" font-style:italic;\">：结合COS云储存服务，为原始数据提供仓库服务，能够导入和下载数据</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; font-style:italic;\">2.标准化数据库访问</span><span style=\" font-style:italic;\">：将标准格式的数据以MySQL形式存储到数据库中，在线提供增删改查接口</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; font-style:italic;\">3.数据动态可视化</span><span style=\" font-style:italic;\">：基于ajax请求，动态对查询的数据进行可视化，包括地层分布、掘进参数变化曲线以及参数分布箱型图</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">软件开发环境：</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-style:italic;\">开发语言：Python3、HTML5、JavaScript</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-style:italic;\">核心依赖包：Django3、Pandas、Bootstrap</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-style:italic;\">开发环境：Windows10、PyCharm、Chrome</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600; text-decoration: underline;\">网址：https://www.custai.top/</span></p></body></html>"))
+        self.pushButton_db.setText(_translate("Dialog", "盾构数据处理系统"))
+        self.pushButton_db2.setText(_translate("Dialog", "盾构数据库平台"))
         self.textBrowser_3.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">输入介绍</p></body></html>"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; text-decoration: underline;\">盾构智能预测系统主要为盾构机提供</span><span style=\" font-size:12pt; font-weight:600; text-decoration: underline;\">智能化地层识别和参数推荐功能</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">具体功能包括：</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; font-style:italic;\">1. 数据预处理：</span><span style=\" font-style:italic;\">为模型训练提供前处理，包括数据导入、训练参数选择、划分数据集等</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; font-style:italic;\">2. 地层动态识别：</span><span style=\" font-style:italic;\">提供SR、ANN、BSR、BNN四种地层识别模型，并提供训练结果可视化，最后基于训练好的模型，输入掘进参数实时预测前方地层</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; font-style:italic;\">3. 参数智能推荐</span><span style=\" font-style:italic;\">：提供多种机器学习预测模型以及多种智能优化算法，基于训练好的模型利用优化算法寻找参数最优解</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">软件开发环境：</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-style:italic;\">开发语言：Python3</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-style:italic;\">核心依赖包：PyQt5、Pymc3、Tensorflow2、Sklearn、Pandas、Matplotlib、</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-style:italic;\">开发环境：Windows10、PyCharm、QtDesigner</span></p></body></html>"))
+        self.pushButton_ml.setText(_translate("Dialog", "盾构智能预测系统"))
         self.textBrowser.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">输入介绍</p></body></html>"))
-        self.pushButton_db2.setText(_translate("Dialog", "数据库平台"))
-        self.label.setText(_translate("Dialog", "EPB智能掘进系统"))
-        self.pushButton_ml.setText(_translate("Dialog", "机器学习平台"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; text-decoration: underline;\">数据处理系统主要为盾构机原始数据提供</span><span style=\" font-size:12pt; font-weight:600; text-decoration: underline;\">标准化数据处理功能</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">具体功能包括：</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; font-style:italic;\">1.数据处理：</span><span style=\" font-style:italic;\">包括筛选并修改列名、去除无效值/异常值、数据平滑、数据透视表、数据导出</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; font-style:italic;\">2.数据分析</span><span style=\" font-style:italic;\">：对数据绘制相关性图、箱型图、曲线图、拟正态分布图</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">软件开发环境：</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-style:italic;\">开发语言：Python3</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-style:italic;\">核心依赖包：PyQt5、Pandas、Numpy、Seaborn、Matplotlib</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-style:italic;\">开发环境：Windows10、PyCharm、QtDesigner</span></p></body></html>"))
 import res_rc

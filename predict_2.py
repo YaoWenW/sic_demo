@@ -11,8 +11,7 @@ class PredictionWindow(QWidget):
         layout = QVBoxLayout()
 
         self.entry_fields = []
-        # 设置默认值
-        value_list = [3144.94, 1.44, 1.35, 7402.23, 32.82, 15.28, 5.18, 6253.86, 3599.38, 12.18]
+        value_list = [2, 15, 1500, 1.5, 1.1, 10000, 20, 20, 2, 15]
         for i,column in enumerate(self.x_test_columns):
             label = QLabel(column)
             layout.addWidget(label)
@@ -21,7 +20,7 @@ class PredictionWindow(QWidget):
             layout.addWidget(entry)
             self.entry_fields.append(entry)
 
-        self.predict_button = QPushButton('预测')
+        self.predict_button = QPushButton('推荐')
         self.label_res = QLabel()
         layout.addWidget(self.predict_button)
         layout.addWidget(self.label_res)
