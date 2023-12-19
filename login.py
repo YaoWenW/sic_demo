@@ -42,7 +42,7 @@ class LoginWindow(QDialog):
         password = self.password_input.text()
 
         # 假设用户名是"user"，密码是"password"，用于示例登录
-        if username == '1' and password == '1':
+        if username == 'wyw' and password == '123':
             self.successful_login()
         else:
             QMessageBox.warning(self, '登录失败', '用户名或密码错误')

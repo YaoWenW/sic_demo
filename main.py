@@ -2,6 +2,8 @@ import collections
 import sys
 import collections
 import random
+import time
+
 from sklearn.preprocessing import MinMaxScaler
 import qdarkstyle
 from qdarkstyle.light.palette import LightPalette
@@ -73,7 +75,19 @@ if __name__ == '__main__':
     dialog = login.LoginWindow()
     # dialog.setWindowIcon(QIcon('logo.ico'))
     MainWindow = QtWidgets.QWidget()
+    import threading
+    from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
+
+    def run_in_thread(func):
+        def wrapper(*args, **kwargs):
+            def run():
+                func(*args, **kwargs)
+
+            thread = threading.Thread(target=run)
+            thread.start()
+
+        return wrapper
 
     def open_url():
         # 在这里添加你要打开的 URL
@@ -126,12 +140,17 @@ if __name__ == '__main__':
             print('input_data输入有误!')
             return
 
-    def upload_excel():
+
+    @run_in_thread
+    @pyqtSlot()
+    def upload_excel(*_):
         try:
             global ori_data
             _translate = QtCore.QCoreApplication.translate
             directory1 = QFileDialog.getOpenFileName(None, "选择文件", "H:/")
             path = directory1[0]
+            ml.label_upload.setText('上传中...')
+            ml.label_upload_2.setText('上传中...')
             if path:
                 if "csv" in path:
                     ori_data = pd.read_csv(path)
@@ -139,6 +158,7 @@ if __name__ == '__main__':
                     ori_data = pd.read_excel(path)
                 else:
                     print("文件格式有误，请上传.csv或.xlsx格式文件")
+
                 # if ori_data:
                 t = ""  # 读取列名
                 for i in ori_data.columns:
@@ -197,11 +217,12 @@ if __name__ == '__main__':
 
             test_size = ml.spinBox_split.value() / 100
             suffle = True if ml.comboBox_split.currentText() == '随机划分' else False
-
-            x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=2000, shuffle=suffle)
-
             if ml.checkBox_minmax.isChecked():
-                x_train, x_test = minmax_norm(x_train), minmax_norm(x_test)
+                x_train, x_test, y_train, y_test = train_test_split(minmax_norm(X), y, test_size=test_size, random_state=2000, shuffle=suffle)
+            else:
+                x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=2000, shuffle=suffle)
+
+
 
         except:
             ml.label_status.setText("输入内容有误，请检查！")
@@ -295,7 +316,10 @@ if __name__ == '__main__':
         except:
             ml.label_SR.setText("训练发生错误，请重试！")
 
-    def ANN_train():
+
+    @run_in_thread
+    @pyqtSlot()
+    def ANN_train(*_):
         try:
             global model_dict
             layers = ml.spinBox_ANN_layers.value()
@@ -303,16 +327,19 @@ if __name__ == '__main__':
             epochs = ml.spinBox_ANN_epochs.value()
             lr = ml.doubleSpinBox_ANN_lr.value()
             drop = 0.1
+            input_shape = len(x_train.iloc[0])
             ml.label_ANN.setText(f"ANN正在训练中...")
             model = Sequential()
+            model.add(Dense(nums, input_shape=(input_shape,), activation='relu'))  # 添加第一层并设置输入形状
             for _ in range(layers):
-                model.add(Dense(nums, input_dim=len(x_train.iloc[0]), activation='relu'))
+                model.add(Dense(nums, input_dim=input_shape, activation='relu'))
             model.add(Dropout(drop))
             model.add(Dense(len(set(y_train)), activation='softmax'))
             model.summary()
             model.compile(loss="sparse_categorical_crossentropy",
                           optimizer=keras.optimizers.SGD(lr=lr),
                           metrics=["accuracy"])
+            # history = ann_fit(model, epochs)
             history = model.fit(x_train, y_train.values, epochs=epochs, validation_split=0.2)
             model_dict['ANN_model'] = model
             # 可视化训练过程
@@ -321,6 +348,7 @@ if __name__ == '__main__':
             plt.gca().set_ylim(0, 1)  # set the vertical range to [0-1]
             plt.show()
             ml.label_ANN.setText("训练完成！")
+            # ANN_res()
 
         except Exception as e:
             ml.label_ANN.setText(f"训练发生错误，请重试！")
@@ -329,7 +357,30 @@ if __name__ == '__main__':
 
     def ANN_res():
         try:
-            model = model_dict['ANN_model']
+            global model_dict
+            layers = ml.spinBox_ANN_layers.value()
+            nums = ml.spinBox_ANN_nums.value()
+            epochs = ml.spinBox_ANN_epochs.value()
+            lr = ml.doubleSpinBox_ANN_lr.value()
+            drop = 0.1
+            input_shape = len(x_train.iloc[0])
+            ml.label_ANN.setText(f"ANN正在训练中...")
+            model = Sequential()
+            model.add(Dense(nums, input_shape=(input_shape,), activation='relu'))  # 添加第一层并设置输入形状
+            for _ in range(layers):
+                model.add(Dense(nums, input_dim=input_shape, activation='relu'))
+            model.add(Dropout(drop))
+            model.add(Dense(len(set(y_train)), activation='softmax'))
+            model.summary()
+            model.compile(loss="sparse_categorical_crossentropy",
+                          optimizer=keras.optimizers.SGD(lr=lr),
+                          metrics=["accuracy"])
+            # history = ann_fit(model, epochs)
+            history = model.fit(x_train, y_train.values, epochs=epochs, validation_split=0.2)
+            model_dict['ANN_model'] = model
+
+
+            # model = model_dict['ANN_model']
 
             train_predict = np.argmax(model.predict(x_train), axis=1)
             print(train_predict)
@@ -391,7 +442,7 @@ if __name__ == '__main__':
                 else:
                     model_name, trace, samp = 'BNN_model', BNN_trace, ml.spinBox_BNN_sampling.value()
                 model = model_dict[model_name]
-                res_prob = round(pred_BYS(input_values,model,trace, samp)[0],2)
+                res_prob = [round(i, 2) for i in pred_BYS(input_values,model,trace, samp)[0]]
                 res_pred = np.argmax(res_prob)
                 if res_pred in [0, 1]:
                     type = '软岩'
@@ -516,7 +567,10 @@ if __name__ == '__main__':
 
         plt.show()
 
-    def BSR_train():
+
+    @run_in_thread
+    @pyqtSlot()
+    def BSR_train(*_):
         try:
             global model_dict
             global ann_input
@@ -559,8 +613,12 @@ if __name__ == '__main__':
             print(e)
             ml.label_BSR.setText("训练发生错误，请重试！")
 
-    def BSR_res():
+
+    @run_in_thread
+    @pyqtSlot()
+    def BSR_res(*_):
         try:
+            ml.label_BSR.setText("计算中...请稍后")
             sampling = ml.spinBox_BSR_sampling.value()
             model = model_dict['BSR_model']
             trace = BSR_trace
@@ -572,7 +630,10 @@ if __name__ == '__main__':
         except:
             ml.label_BSR.setText("训练发生错误，请重试！")
 
-    def BNN_train():
+
+    @run_in_thread
+    @pyqtSlot()
+    def BNN_train(*_):
         try:
             global model_dict
             global ann_input
@@ -642,8 +703,12 @@ if __name__ == '__main__':
             ml.label_BNN.setText("训练发生错误，请重试！")
             print(e)
 
-    def BNN_res():
+
+    @run_in_thread
+    @pyqtSlot()
+    def BNN_res(*_):
         try:
+            ml.label_BNN.setText("计算中...请稍后")
             sampling = ml.spinBox_BNN_sampling.value()
             model = model_dict['BNN_model']
             trace = BNN_trace
@@ -665,76 +730,9 @@ if __name__ == '__main__':
             print(e)
             ml.label_BNN.setText("训练发生错误，请重试！")
 
-    # 多线程编程
-    # class TrainingThread(QThread):
-    #     finished = pyqtSignal()  # 发送信号以指示训练完成
-    #     interrupted = pyqtSignal()  # 发送信号以指示训练被中断
-    #
-    #     def __init__(self, model_name):
-    #         super().__init__()
-    #         self.model_name = model_name
-    #
-    #     def run(self):
-    #         if self.model_name == 'BSR_model':
-    #             self.BSR_model()
-    #         elif self.model_name == 'BNN_model':
-    #             self.BNN_model()
-    #         elif self.model_name == 'ANN_model':
-    #             self.ANN_model()
-    #         elif self.model_name == 'SR_model':
-    #             self.SR_model()
-    #
-    #     def BSR_model(self):
-    #         try:
-    #             # 模拟训练过程
-    #             BSR_train()
-    #         except KeyboardInterrupt:
-    #             return
-    #         self.finished.emit()
-    #
-    #     def BNN_model(self):
-    #         try:
-    #             # 模拟训练过程
-    #             BNN_train()
-    #         except KeyboardInterrupt:
-    #             return
-    #         self.finished.emit()
-    #
-    #     def ANN_model(self):
-    #         try:
-    #             # 模拟训练过程
-    #             ANN_train()
-    #         except KeyboardInterrupt:
-    #             return
-    #         self.finished.emit()
-    #
-    #     def SR_model(self):
-    #         try:
-    #             # 模拟训练过程
-    #             SR_train()
-    #         except KeyboardInterrupt:
-    #             return
-    #         self.finished.emit()
-
-    # class TrainingController:
-    #     def __init__(self):
-    #         self.training_threads = {}
-    #
-    #     def start_training(self, model_name):
-    #         self.training_threads[model_name] = TrainingThread(model_name)
-    #         self.training_threads[model_name].finished.connect(self.training_finished)
-    #         self.training_threads[model_name].start()
-    #
-    #     def interrupt_training(self, model_name):
-    #         if model_name in self.training_threads:
-    #             self.training_threads[model_name].terminate()
-    #
-    #     def training_finished(self):
-    #         print("训练完成！")
 
 
     # 参数推荐
-
     def data_split_new():
         global ori_data
         global x_train
@@ -776,18 +774,23 @@ if __name__ == '__main__':
                 col_new = [c for c in a.columns if c not in response_cols + [goal_col]]
                 X_new = a[col_new]
                 X = X_new
-            x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=2000, shuffle=suffle)
 
-            if ml.checkBox_minmax_2.isChecked():
-                x_train, x_test = minmax_norm(x_train), minmax_norm(x_test)
-            ml.label_status_2.setText('处理成功！')
+            if ml.checkBox_minmax.isChecked():
+                x_train, x_test, y_train, y_test = train_test_split(minmax_norm(X), y, test_size=test_size,
+                                                                    random_state=2000, shuffle=suffle)
+            else:
+                x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=2000,
+                                                                    shuffle=suffle)
 
+            ml.label_status_2.setText("处理成功！")
         except Exception as e:
             print(e)
             ml.label_status_2.setText("输入内容有误，请检查！")
 
     # Catboost、XGBoost、RF、LGBM
-    def LGBM_train():
+    @run_in_thread
+    @pyqtSlot()
+    def LGBM_train(*_):
         try:
             n = ml.spinBox_LGBM_n.value()
             depth = ml.spinBox_LGBM_depth.value()
@@ -795,6 +798,7 @@ if __name__ == '__main__':
             lr = ml.doubleSpinBox_LGBM_lr.value()
             LGBM_model = LGBMRegressor(objective='regression', n_estimators=n, num_leaves=leaves, max_depth=depth,
                                        learning_rate=lr)  # 定义模型超参数
+            ml.label_LGBM.setText('训练中...')
             LGBM_model.fit(x_train, y_train)
             model_dict["LGBM_model"] = LGBM_model
             # model_pred(LGBM_model, 'LGBM_model', x_train, y_train, x_test, y_test, goal_col)
@@ -809,12 +813,16 @@ if __name__ == '__main__':
         except Exception as e:
             print(e)
 
-    def RF_train():
+
+    @run_in_thread
+    @pyqtSlot()
+    def RF_train(*_):
         try:
             n = ml.spinBox_RF_n.value()
             depth = ml.spinBox_RF_depth.value() if ml.spinBox_RF_depth.value() != -1 else None
             min_samples_leaf = ml.spinBox_RF_nums.value()
             RF_model = RandomForestRegressor(n_estimators=n, max_depth=depth, min_samples_split=min_samples_leaf)
+            ml.label_RF.setText('训练中...')
             RF_model.fit(x_train, y_train)
             model_dict["RF_model"] = RF_model
             # model_pred(RF_model, 'RF_model', x_train, y_train, x_test, y_test, goal_col)
@@ -827,12 +835,16 @@ if __name__ == '__main__':
         res = model_pred(model_dict["RF_model"], 'RF_model', x_train, y_train, x_test, y_test, goal_col)
         ml.label_RF.setText(res)
 
-    def Cat_train():
+
+    @run_in_thread
+    @pyqtSlot()
+    def Cat_train(*_):
         try:
             iterations = ml.spinBox_Cat_epoch.value()
             depth = ml.spinBox_Cat_depth.value()
             lr = ml.doubleSpinBox_Cat_lr.value()
             Cat_model = CatBoostRegressor(task_type="CPU", iterations=iterations, depth=depth, learning_rate=lr)
+            ml.label_Cat.setText('训练中...')
             Cat_model.fit(x_train, y_train)
             model_dict["Cat_model"] = Cat_model
             # model_pred(CAT_model, 'CAT_model', x_train, y_train, x_test, y_test, goal_col)
@@ -847,12 +859,17 @@ if __name__ == '__main__':
         except Exception as e:
             print(e)
 
-    def XGB_train():
+
+    @run_in_thread
+    @pyqtSlot()
+    def XGB_train(*_):
         try:
+
             n = ml.spinBox_XGB_n.value()
             lr = ml.doubleSpinBox_XGB_lr.value()
             depth = ml.spinBox_XGB_depth.value()
             XGB_model = XGBRegressor(n_estimators=n, learning_rate=lr, max_depth=depth)
+            ml.label_XGB.setText('训练中...')
             XGB_model.fit(x_train, y_train)
             ml.label_XGB.setText('训练完成！')
             model_dict["XGB_model"] = XGB_model
@@ -1031,8 +1048,8 @@ if __name__ == '__main__':
         plt.show()
         return s
 
-    # if dialog.exec_() == QDialog.Accepted:
-    if True:
+    if dialog.exec_() == QDialog.Accepted:
+    # if True:
         ui = main_win_Ui()
         ui.setupUi(MainWindow)
         MainWindow.show()
@@ -1088,6 +1105,7 @@ if __name__ == '__main__':
         ml.pushButton_ANN_train.clicked.connect(
             ANN_train
             # lambda: {TrainingController().start_training("ANN_model")}
+            # start_training
         )
         ml.pushButton_ANN_res.clicked.connect(
             ANN_res
@@ -1098,6 +1116,7 @@ if __name__ == '__main__':
         ml.pushButton_ANN_stop.clicked.connect(
             lambda: {ml.label_ANN.setText('训练已终止')}
             # lambda: {TrainingController().interrupt_training("ANN_model")}
+            # stop_training
         )
 
         ml.pushButton_BSR_train.clicked.connect(
@@ -1107,9 +1126,10 @@ if __name__ == '__main__':
         ml.pushButton_BSR_res.clicked.connect(
             BSR_res
         )
-        ml.pushButton_SR_save.clicked.connect(
+        ml.pushButton_BSR_save.clicked.connect(
             lambda: {ml.label_BSR.setText('保存成功')}
         )
+
         ml.pushButton_BSR_stop.clicked.connect(
             lambda: {ml.label_BSR.setText('训练已终止')}
         )
