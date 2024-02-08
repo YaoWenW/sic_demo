@@ -68,8 +68,8 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling,True)
 
-    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-    # app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette())) # 浅色
+    # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+    app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette())) # 浅色
     app.setWindowIcon(QIcon('logo.ico'))
     # apply_stylesheet(app, theme='light_blue.xml')
     dialog = login.LoginWindow()
@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
     def open_url2():
         # 在这里添加你要打开的 URL
-        url = QUrl('https://www.custai.top/file/90/download')
+        url = QUrl('https://www.custai.top/file/92/download')
         QDesktopServices.openUrl(url)
         return
 
@@ -689,15 +689,15 @@ if __name__ == '__main__':
                     BNN_trace = pm.variational.sample_approx(approx, draws=sampling)
 
             model_dict['BNN_model'] = BNN_model
+            # 采样迹线
+            plt.rc('font', family='Times New Roman')
+            matplotlib.rc('xtick', labelsize=12)
+            az.plot_trace(BNN_trace)
+            plt.tight_layout()
+            plt.show()
             ml.label_BNN.setText("训练完成！")
             #
-            # # 采样迹线
-            # plt.rc('font', family='Times New Roman')
-            # matplotlib.rc('xtick', labelsize=12)
-            # az.plot_trace(trace_BNN)
-            # # plt.savefig("D:/Desktop/大论文/图表和结果/导出图片/BSR_VI_采样.png", format="png", dpi=600)
-            # plt.tight_layout()
-            # plt.show()
+
 
         except Exception as e:
             ml.label_BNN.setText("训练发生错误，请重试！")
@@ -1097,10 +1097,10 @@ if __name__ == '__main__':
         ml.pushButton_SR_save.clicked.connect(
             lambda: {ml.label_SR.setText('保存成功')}
         )
-        ml.pushButton_SR_stop.clicked.connect(
-            lambda: {ml.label_SR.setText('训练已终止')}
-            # lambda: {TrainingController().interrupt_training("SR_model")}
-        )
+        # ml.pushButton_SR_stop.clicked.connect(
+        #     lambda: {ml.label_SR.setText('训练已终止')}
+        #     # lambda: {TrainingController().interrupt_training("SR_model")}
+        # )
 
         ml.pushButton_ANN_train.clicked.connect(
             ANN_train
@@ -1113,11 +1113,11 @@ if __name__ == '__main__':
         ml.pushButton_ANN_save.clicked.connect(
             lambda: {ml.label_ANN.setText('保存成功')}
         )
-        ml.pushButton_ANN_stop.clicked.connect(
-            lambda: {ml.label_ANN.setText('训练已终止')}
-            # lambda: {TrainingController().interrupt_training("ANN_model")}
-            # stop_training
-        )
+        # ml.pushButton_ANN_stop.clicked.connect(
+        #     lambda: {ml.label_ANN.setText('训练已终止')}
+        #     # lambda: {TrainingController().interrupt_training("ANN_model")}
+        #     # stop_training
+        # )
 
         ml.pushButton_BSR_train.clicked.connect(
             # lambda: {TrainingController().start_training("BSR_model")}
@@ -1130,9 +1130,9 @@ if __name__ == '__main__':
             lambda: {ml.label_BSR.setText('保存成功')}
         )
 
-        ml.pushButton_BSR_stop.clicked.connect(
-            lambda: {ml.label_BSR.setText('训练已终止')}
-        )
+        # ml.pushButton_BSR_stop.clicked.connect(
+        #     lambda: {ml.label_BSR.setText('训练已终止')}
+        # )
 
         ml.pushButton_BNN_train.clicked.connect(
             BNN_train
@@ -1143,9 +1143,9 @@ if __name__ == '__main__':
         ml.pushButton_BNN_save.clicked.connect(
             lambda: {ml.label_BNN.setText('保存成功')}
         )
-        ml.pushButton_BNN_stop.clicked.connect(
-            lambda: {ml.label_BNN.setText('训练已终止')}
-        )
+        # ml.pushButton_BNN_stop.clicked.connect(
+        #     lambda: {ml.label_BNN.setText('训练已终止')}
+        # )
 
         ml.commandLinkButton_download.clicked.connect(
             open_url2

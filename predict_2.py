@@ -29,7 +29,7 @@ class PredictionWindow(QWidget):
         # layout.addWidget(self.save_button)
 
         self.setLayout(layout)
-        self.setWindowTitle('模型预测')
+        self.setWindowTitle('实时推荐')
 
     def perform_prediction(self):
         try:

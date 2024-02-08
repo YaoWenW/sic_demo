@@ -11,7 +11,7 @@ class LoginWindow(QDialog):
         self.init_ui()
         self.flag = 0
     def init_ui(self):
-        self.setWindowTitle('登录 - 软件标题')  # 在这里修改软件标题
+        self.setWindowTitle('登录 - 盾构智能化掘进系统')  # 在这里修改软件标题
         self.setGeometry(300, 200, 400, 300)
         self.setFixedSize(400, 300)  # 固定窗口大小
         # self.setStyleSheet("background-color: #f0f0f0;")
